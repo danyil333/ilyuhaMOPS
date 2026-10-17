@@ -52,17 +52,14 @@ function enable() {
     btn.innerHTML = "&gt;&gt;&gt;";
 }
 
-// Ждём, пока видео будет готово к проигрыванию без пауз
 vid.addEventListener("canplaythrough", enable, { once: true });
 
-// Скачиваем файл целиком заранее (работает через http/https).
-// Если не получилось (например, file://), играем напрямую по ссылке.
+
 fetch(url)
     .then(r => r.blob())
     .then(b => { vid.src = URL.createObjectURL(b); })
     .catch(() => { vid.src = url; });
 
-// Запасной таймер на случай, если canplaythrough не сработает
 setTimeout(enable, 8000);
 
 function start() {
@@ -71,13 +68,11 @@ function start() {
     vid.muted = false;
     vid.volume = 1;
 
-    // Показываем видео ровно в тот момент, когда пошёл первый кадр
     vid.addEventListener("playing", () => {
         vid.style.visibility = "visible";
     }, { once: true });
 
     vid.play().catch(() => {
-        // если браузер не дал включить звук, запускаем без него
         vid.muted = true;
         vid.play();
     });
