@@ -52,15 +52,21 @@ function enable() {
     btn.innerHTML = "&gt;&gt;&gt;";
 }
 
-vid.addEventListener("canplaythrough", enable, { once: true });
+// 1. Скачиваем файл целиком в кэш браузера (2 МБ).
+// 2. Затем подключаем его к видео прямо по ссылке (без blob: на телефонах так стабильнее)
+//    и сразу делаем load(), чтобы декодер был готов к старту.
+fetch(url, { cache: "force-cache" })
+    .then(r => r.arrayBuffer())
+    .catch(() => {})
+    .then(() => {
+        vid.src = url;
+        vid.load();
+        enable();
+    });
 
-
-fetch(url)
-    .then(r => r.blob())
-    .then(b => { vid.src = URL.createObjectURL(b); })
-    .catch(() => { vid.src = url; });
-
-setTimeout(enable, 8000);
+function show() {
+    vid.style.visibility = "visible";
+}
 
 function start() {
     document.getElementById("test").innerHTML = "<h1>...</h1>";
@@ -68,11 +74,16 @@ function start() {
     vid.muted = false;
     vid.volume = 1;
 
-    vid.addEventListener("playing", () => {
-        vid.style.visibility = "visible";
-    }, { once: true });
+    // Показываем картинку тогда, когда реально отрисован первый кадр
+    // (так видео и звук стартуют вместе, без «чёрного» промежутка)
+    if ("requestVideoFrameCallback" in vid) {
+        vid.requestVideoFrameCallback(show);
+    } else {
+        vid.addEventListener("playing", show, { once: true });
+    }
 
     vid.play().catch(() => {
+        // если браузер не дал включить звук, запускаем без него
         vid.muted = true;
         vid.play();
     });
