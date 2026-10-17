@@ -51,26 +51,23 @@ const sound = document.getElementById("sound");
 
 const ctx = new (window.AudioContext || window.webkitAudioContext)();
 let buffer = null;
-
-// OGG в 10 раз меньше WAV; если браузер его не умеет (старый Safari), берём WAV
 const canOgg = !!sound.canPlayType('audio/ogg; codecs="vorbis"');
 const soundUrl = canOgg ? "screamer1.ogg" : "screamer1.wav";
 sound.src = soundUrl;
 
-// 1. Гифка полностью загружена
 const gifReady = new Promise(res => {
     if (gif.complete && gif.naturalWidth) res();
     else { gif.onload = res; gif.onerror = res; }
 });
 
-// 2. Звук загружен и декодирован заранее
+
 const audioReady = fetch(soundUrl)
     .then(r => r.arrayBuffer())
     .then(d => ctx.decodeAudioData(d))
     .then(b => { buffer = b; })
     .catch(() => { /* останется обычный <audio> */ });
 
-// Кнопка активна, только когда всё готово
+
 Promise.all([gifReady, audioReady]).then(() => {
     btn.disabled = false;
     btn.innerHTML = "&gt;&gt;&gt;";
