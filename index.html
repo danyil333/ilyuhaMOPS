@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>What is a HighTierHuman to a LowTierGod?</title>
+<style>
+body {
+    background-color:#34cfeb;
+    text-align:center;
+    font-family:'Gill Sans', sans-serif;
+}
+button {
+    width:350px;
+    height:120px;
+    font-size:42px;
+    font-weight:bold;
+    cursor:pointer;
+}
+#gif {
+    visibility:hidden;
+    position:fixed;
+    top:0; left:0;
+    width:100vw; height:100vh;
+    object-fit:cover;
+    z-index:9999;
+}
+</style>
+</head>
+<body>
+
+<div id="test">
+    <h1>НАЖМИ ЙООООУУ</h1>
+    <button onclick="start()">&gt;&gt;&gt;</button>
+</div>
+
+<img id="gif" src="hehehe777.gif">
+
+<!-- запасной вариант, если Web Audio недоступен (например, при открытии через file://) -->
+<audio id="sound" preload="auto" src="screamer1.wav"></audio>
+
+<script>
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
+let buffer = null;
+
+// Пытаемся заранее декодировать звук (работает при открытии через http://, а не file://)
+fetch("screamer1.wav")
+    .then(r => r.arrayBuffer())
+    .then(data => ctx.decodeAudioData(data))
+    .then(buf => buffer = buf)
+    .catch(() => { /* останется обычный <audio> */ });
+
+function start() {
+    document.getElementById("test").innerHTML = "<h1>...</h1>";
+    document.getElementById("gif").style.visibility = "visible";
+
+    if (buffer) {
+        if (ctx.state === "suspended") ctx.resume();
+        const src = ctx.createBufferSource();
+        src.buffer = buffer;
+        src.connect(ctx.destination);
+        src.start(0);
+    } else {
+        const s = document.getElementById("sound");
+        s.currentTime = 0;
+        s.play();
+    }
+}
+</script>
+
+</body>
+</html>
