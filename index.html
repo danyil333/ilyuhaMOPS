@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>What is a HighTierHuman to a LowTierGod?</title>
+<title>ВОГНЕВА ПІДГОТОВКА?</title>
 <style>
 body {
     background-color:#34cfeb;
@@ -35,14 +35,14 @@ button {
 
 <img id="gif" src="hehehe777.gif">
 
-<!-- запасной вариант, если Web Audio недоступен (например, при открытии через file://) -->
+
 <audio id="sound" preload="auto" src="screamer1.wav"></audio>
 
 <script>
 const ctx = new (window.AudioContext || window.webkitAudioContext)();
 let buffer = null;
 
-// Пытаемся заранее декодировать звук (работает при открытии через http://, а не file://)
+
 fetch("screamer1.wav")
     .then(r => r.arrayBuffer())
     .then(data => ctx.decodeAudioData(data))
